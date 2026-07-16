@@ -1,0 +1,17 @@
+{
+  "app_name": "<app-name>",
+  "app_slug": "<app-slug>",
+  "app_id": "<APP_ID>",
+  "org_id": "<ORG_ID>",
+  "source": "sad",
+  "tech_stack": [],
+  "services": [],
+  "dependencies": [],
+  "integrations": [],
+  "data_stores": [],
+  "environments": [],
+  "target_platform": "Azure LMP",
+  "nfrs": [],
+  "risks": [],
+  "open_questions": []
+}

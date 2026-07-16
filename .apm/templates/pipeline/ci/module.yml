@@ -1,0 +1,76 @@
+# LSEG canonical CHILD pipeline (MigrateKit template).
+# Emitted at: <app>/infrastructure/ci/module.yml
+# Stages: vault -> terraform-apply -> terraform-destroy -> terraform-state-unlock.
+# NOTE: no bams-upload stage (intentionally excluded).
+
+default:
+  tags: [$RUNNER_TAG]
+
+include:
+  - project: ci/stable/iac/terraform-core
+    ref: ${TF_CORE_TEMPLATE_VERSION}
+    file:
+      - templates/azure.yml
+  - project: ci/stable/security/vault-service
+    ref: ${VAULT_SERVICE_TEMPLATE_VERSION}
+    file:
+      - templates/vault-service.yml
+  - local: ci/variables.yml
+
+stages:
+  - vault
+  - terraform-apply
+  - terraform-destroy
+  - terraform-state-unlock
+
+# Ensure the pipeline also runs for merge request events.
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - when: always
+
+0-vault-azure-auth:
+  stage: vault
+  extends: [.vault-azure-auth-artifacts]
+  tags: ["LSEG"]
+
+0-terraform-plan:
+  stage: terraform-apply
+  extends: [.terraform-core-plan, .vault-artifact-decrypter]
+  needs:        [0-vault-azure-auth]
+  dependencies: [0-vault-azure-auth]
+  when: manual
+
+1-terraform-apply:
+  stage: terraform-apply
+  extends: [.terraform-core-apply, .vault-artifact-decrypter]
+  needs:        [0-vault-azure-auth, 0-terraform-plan]
+  dependencies: [0-vault-azure-auth, 0-terraform-plan]
+  when: manual
+  environment:
+    name: $ENV
+
+0-terraform-destroy-plan:
+  stage: terraform-destroy
+  extends: [.terraform-core-destroy-plan, .vault-artifact-decrypter]
+  needs:        [0-vault-azure-auth]
+  dependencies: [0-vault-azure-auth]
+  when: manual
+
+1-terraform-destroy-apply:
+  stage: terraform-destroy
+  extends: [.terraform-core-destroy-apply, .vault-artifact-decrypter]
+  needs:        [0-vault-azure-auth, 0-terraform-destroy-plan]
+  dependencies: [0-vault-azure-auth, 0-terraform-destroy-plan]
+  when: manual
+  environment:
+    name: $ENV
+
+0-terraform-state-unlock:
+  stage: terraform-state-unlock
+  extends: [.terraform-core-unlock, .vault-artifact-decrypter]
+  needs:        [0-vault-azure-auth]
+  dependencies: [0-vault-azure-auth]
+  when: manual
+  environment:
+    name: $ENV

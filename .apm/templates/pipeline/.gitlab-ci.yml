@@ -1,0 +1,62 @@
+# LSEG canonical PARENT pipeline (MigrateKit template).
+# Emitted at: <app>/infrastructure/.gitlab-ci.yml
+# Duplicate the deploy-<env> block once per environment from the intake.
+# All app-specific values are placeholders for manual completion (v0).
+
+include:
+  - project: ci/stable/release-tools/tagger
+    ref: <TAGGER_REF>
+    file:
+      - templates/tagger.yml
+
+  - local: ci/variables.yml
+
+.deploy-shared:
+  trigger:
+    include: ci/module.yml
+    strategy: depend
+    forward:
+      pipeline_variables: true
+      yaml_variables: true
+
+stages:
+  - tag
+  - environment
+
+0-create-tag:
+  stage: tag
+  variables:
+    TAGGER_GENERATED_TAG: "${RELEASE_VERSION}.${CI_PIPELINE_IID}"
+  extends: [.git-push-tags]
+  tags: ["LSEG"]
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_REF_NAME == "main"
+      when: on_success
+    - when: never
+
+# ---------------------------------------------------------------------------
+# Repeat this block once per environment (dev, ppr-01, prd-01, prd-02, ...).
+# ---------------------------------------------------------------------------
+deploy-<env>:
+  stage: environment
+  extends: [.deploy-shared]
+  variables:
+    VS_VAULT_SELECT: "<ppe|prod>"
+    VS_AZURE_ACCOUNT: "<AZURE_SUBSCRIPTION_NAME>"
+    AZURE_ACCOUNT: "<AZURE_SUBSCRIPTION_NAME>"   # required for terraform-core
+    TF_CORE_STATE_BACKEND_AZURE_RESOURCE_GROUP: "<TF_STATE_RG>"
+    TF_CORE_STATE_BACKEND_AZURE_STORAGE_ACCOUNT: "<TF_STATE_STORAGE_ACCOUNT>"
+    TF_CORE_STATE_BACKEND_TF_STATE_FILE_KEY: "infra/${ENV}/<APP_SLUG>.tfstate"
+    KEYVAULT_NAME: "<KEYVAULT_NAME>"
+    RUNNER_TAG: "<RUNNER_TAG>"
+    ENV: "<env>"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "web" && $CI_COMMIT_TAG
+      when: manual
+    - if: $CI_COMMIT_TAG            # prevent run on tag push (triggered by 0-create-tag)
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_REF_NAME != "main"
+      when: never
+    - when: manual

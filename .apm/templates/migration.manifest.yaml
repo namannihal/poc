@@ -1,0 +1,34 @@
+# MigrateKit migration manifest — source of truth for phase handoff.
+# Seed this file into .lseg-migration/<app-name>/ when the flow starts.
+# Every command updates the relevant phase, its artifacts, and next_step.
+
+app_name: "<app-name>"
+app_slug: "<app-slug>"
+app_id: "<APP_ID>"        # optional
+org_id: "<ORG_ID>"        # optional
+
+intake:
+  source: "sad"           # sad | ai-migrate | assess
+  normalized: false       # true once intake/intake.normalized.md exists
+
+# Phase status: not_started | in_progress | done | blocked
+phases:
+  intake:
+    status: not_started
+    artifacts: []
+  requirements:
+    status: not_started
+    artifacts: []
+  module_plan:
+    status: not_started
+    mode: ""              # new | migration (set by /map-cpf-modules)
+    artifacts: []
+  iac:
+    status: not_started
+    artifacts: []
+  pipeline:
+    status: not_started
+    artifacts: []
+
+next_step: "/analyse-sad"
+updated: "<ISO-8601 timestamp>"

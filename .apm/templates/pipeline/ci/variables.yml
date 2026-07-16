@@ -1,0 +1,32 @@
+# LSEG canonical pipeline VARIABLES (MigrateKit template).
+# Emitted at: <app>/infrastructure/ci/variables.yml
+# Pinned template versions + terraform-core wiring + GCF/Trivy compliance vars.
+# All app-specific values are placeholders for manual completion (v0).
+
+variables:
+  TF_CORE_TEMPLATE_VERSION: "<TF_CORE_TEMPLATE_VERSION>"
+  VAULT_SERVICE_TEMPLATE_VERSION: "<VAULT_SERVICE_TEMPLATE_VERSION>"
+  RELEASE_VERSION: "1.0.0"
+
+  # Vault service
+  VS_VAULT_NAMESPACE: "azure"
+
+  # Terraform core
+  TF_CORE_TERRAFORM_PATH: "terraform"
+  TF_CORE_STATE_BACKEND_MODE: "azurerm"
+  TF_CORE_STATE_BACKEND_AZURE_STORAGE_CONTAINER: "terraform"
+  TF_CORE_TERRAFORM_PLAN_ARGS: "--var-file=../environments/${ENV}/infra.tfvars"
+
+  # GCF / compliance
+  APP_ID: "<APP_ID>"
+  WIZ_OPE_APP_ID: "<APP_ID>"
+  LSEG_VAULT_NAMESPACE: "azure"
+  LSEG_PPE_VAULT: "true"
+  VS_VAULT_SELECT: "ppe"
+  TERRAFORM_PATH_LIST: "terraform"
+  FUNCTIONAL_TEST_DISABLED: "true"
+  OPE_VAULT_INSTANCE: "LSEG_PPE"
+  OPE_VAULT_NAMESPACE: "azure"
+
+  # Trivy requires a tfvars reference to execute the trivy stage
+  TRIVY_ADDITIONAL_ARGS: "--tf-vars environments/<default-env>/infra.tfvars"

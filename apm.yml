@@ -1,0 +1,43 @@
+# LSEG MigrateKit — APM package manifest
+# Schema: https://aka.ms/apm
+#
+# MigrateKit is a thin orchestrator. It does NOT re-implement IaC or pipeline
+# generation — it reuses the IaC_Terraform_Agent_4LMP toolkit (declared as a
+# dependency below) behind a normalized intake contract and a repo-file manifest.
+
+name: migrate-kit
+version: 0.1.0
+description: >-
+  LSEG MigrateKit — orchestrates an application's Azure LMP migration lifecycle
+  from GitHub Copilot / VS Code. Baseline v0 wires the IaC + pipeline plug
+  (reusing IaC_Terraform_Agent_4LMP) behind a normalized intake contract and a
+  repo-file migration manifest.
+author: LSEG GHCP-IP
+license: internal
+
+# --- Primitives shipped by this package ---
+agents:
+  - .apm/agents/migrate-kit.agent.md
+
+prompts:
+  - .apm/prompts/extract-sad-to-markdown.prompt.md
+  - .apm/prompts/analyse-sad.prompt.md
+  - .apm/prompts/map-cpf-modules.prompt.md
+  - .apm/prompts/generate-iac-scaffolding.prompt.md
+  - .apm/prompts/generate-pipeline.prompt.md
+
+instructions:
+  - .apm/instructions/intake-contract.instructions.md
+  - .apm/instructions/pipeline-format.instructions.md
+
+# --- Reused capability (wrapped, not copied) ---
+# The IaC toolkit provides the SAD analysis, CPF module mapping, IaC scaffolding,
+# and the underlying GitLab CI generation that /generate-pipeline reshapes into
+# the LSEG canonical format. MigrateKit delegates to these prompts/skills/templates.
+dependencies:
+  apm:
+    - lseg/lseg-agents/IaC_Terraform_Agent_4LMP
+
+# --- Governance ---
+# No secrets are bundled. CPF/Artifactory/GitLab tokens stay in the consuming
+# environment. Any MCP servers remain opt-in and are gated by apm-policy.yml.
