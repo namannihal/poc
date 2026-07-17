@@ -1,5 +1,5 @@
-# LSEG canonical CHILD pipeline (MigrateKit template).
-# Emitted at: <app>/infrastructure/ci/module.yml
+# Canonical CHILD pipeline (MigrateKit template).
+# Emitted at: <app-slug>/infrastructure/ci/module.yml
 # Stages: vault -> terraform-apply -> terraform-destroy -> terraform-state-unlock.
 # NOTE: no bams-upload stage (intentionally excluded).
 

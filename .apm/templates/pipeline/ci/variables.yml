@@ -1,5 +1,5 @@
-# LSEG canonical pipeline VARIABLES (MigrateKit template).
-# Emitted at: <app>/infrastructure/ci/variables.yml
+# Canonical pipeline VARIABLES (MigrateKit template).
+# Emitted at: <app-slug>/infrastructure/ci/variables.yml
 # Pinned template versions + terraform-core wiring + GCF/Trivy compliance vars.
 # All app-specific values are placeholders for manual completion (v0).
 

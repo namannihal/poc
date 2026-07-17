@@ -1,24 +1,24 @@
 ---
 name: pipeline-format
 description: >-
-  The LSEG canonical IaC + GitLab CI/CD pipeline format that MigrateKit emits.
+  The canonical IaC + GitLab CI/CD pipeline format that MigrateKit emits.
   /generate-iac-scaffolding produces the terraform/ + environments/ layout;
   /generate-pipeline reshapes the IaC toolkit's CI output into the two-tier
   parent + child pipeline below. All app-specific values are placeholders in v0.
 applyTo: "**/infrastructure/**"
 ---
 
-# LSEG Canonical IaC + Pipeline Format
+# Canonical IaC + Pipeline Format
 
 `/generate-iac-scaffolding` + `/generate-pipeline` emit the layout below. It mirrors
-the production reference (Datacloud Ingestion `infrastructure/`). All app-specific
+a production reference `infrastructure/`. All app-specific
 values are emitted as **`<PLACEHOLDER>`** tokens for manual completion in v0.
 The `bams-upload` stage seen in some reference repos is intentionally **excluded**.
 
 ## Directory layout
 
 ```
-<app>/infrastructure/
+<app-slug>/infrastructure/
 ├── .gitlab-ci.yml
 ├── .gitignore
 ├── README.md
@@ -63,7 +63,7 @@ all app-specific fields as placeholders. See `templates/pipeline/ci/variables.ym
 
 | Placeholder | Meaning | Likely source |
 |---|---|---|
-| `<APP_ID>` / `<ORG_ID>` | LSEG app / org identifier | intake / SAD |
+| `<APP_ID>` / `<ORG_ID>` | App / org identifier | intake / SAD |
 | `<env>` list | Environments (dev, ppr-01, prd-01, prd-02) | intake / SAD |
 | `<AZURE_SUBSCRIPTION_NAME>` | Per-env subscription | platform onboarding |
 | `<TF_STATE_RG>` / `<TF_STATE_STORAGE_ACCOUNT>` | Terraform remote-state backend | platform onboarding |

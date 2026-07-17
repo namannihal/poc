@@ -1,5 +1,5 @@
-# LSEG canonical PARENT pipeline (MigrateKit template).
-# Emitted at: <app>/infrastructure/.gitlab-ci.yml
+# Canonical PARENT pipeline (MigrateKit template).
+# Emitted at: <app-slug>/infrastructure/.gitlab-ci.yml
 # Duplicate the deploy-<env> block once per environment from the intake.
 # All app-specific values are placeholders for manual completion (v0).
 

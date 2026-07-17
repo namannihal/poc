@@ -1,34 +1,35 @@
-# MigrateKit migration manifest — source of truth for phase handoff.
-# Seed this file into .lseg-migration/<app-name>/ when the flow starts.
-# Every command updates the relevant phase, its artifacts, and next_step.
+# MigrateKit migration manifest — source of truth for phase handoff (SAD-only workflow).
+# Seeded into .migrate-kit/<app-slug>/ on the first `/migrate-app <app>` run.
+# Every phase updates its status + artifacts, the current sad_source, next_step, and updated.
 
 app_name: "<app-name>"
 app_slug: "<app-slug>"
-app_id: "<APP_ID>"        # optional
-org_id: "<ORG_ID>"        # optional
+workflow: "sad-only"          # this version: SAD bootstrap only (no AI Migrate / no /assess)
 
-intake:
-  source: "sad"           # sad | ai-migrate | assess
-  normalized: false       # true once intake/intake.normalized.md exists
+sad_source: ""                # path to the authoritative SAD, e.g. input/source-sad.docx
 
 # Phase status: not_started | in_progress | done | blocked
+# Order: extract -> analyse -> module_plan -> iac -> validate -> pipeline
 phases:
-  intake:
+  extract:
     status: not_started
-    artifacts: []
-  requirements:
+    artifacts: []             # intake/source-sad.md
+  analyse:
     status: not_started
-    artifacts: []
+    artifacts: []             # arch/<app-slug>-requirements.md
   module_plan:
     status: not_started
-    mode: ""              # new | migration (set by /map-cpf-modules)
-    artifacts: []
+    mode: ""                  # new | migration (set by /map-cpf-modules)
+    artifacts: []             # arch/<app-slug>-module-plan.md (+ -migration-report.md)
   iac:
     status: not_started
-    artifacts: []
+    artifacts: []             # <app-slug>/infrastructure/terraform/*, environments/<env>/infra.tfvars
+  validate:
+    status: not_started
+    artifacts: []             # terraform init -backend=false + terraform validate (MigrateKit-owned)
   pipeline:
     status: not_started
-    artifacts: []
+    artifacts: []             # <app-slug>/infrastructure/.gitlab-ci.yml, ci/module.yml, ci/variables.yml
 
-next_step: "/analyse-sad"
+next_step: "place SAD at input/source-sad.docx, then run /migrate-app <app>"
 updated: "<ISO-8601 timestamp>"
